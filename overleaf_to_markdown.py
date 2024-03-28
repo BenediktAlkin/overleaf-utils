@@ -32,6 +32,7 @@ def main(src, dst):
                 and not line.startswith(r"\end{document}")
                 and not line.startswith(r"\hline")
                 and not line.startswith(r"\newpage")
+                and not line.startswith(r"\definecolor")
         )
     ]
 
@@ -50,6 +51,19 @@ def main(src, dst):
             lines.pop(i)
             line = lines[i]
             while not line.startswith(r"\end{enumerate}"):
+                item = r"\item "
+                assert lines[i].startswith(item)
+                lines[i] = "- " + lines[i][len(item):]
+                i += 1
+                line = lines[i]
+            lines.pop(i)
+            continue
+
+        # replace \begin{itemize} with markdown enumerate
+        if line.startswith(r"\begin{itemize}"):
+            lines.pop(i)
+            line = lines[i]
+            while not line.startswith(r"\end{itemize}"):
                 item = r"\item "
                 assert lines[i].startswith(item)
                 lines[i] = "- " + lines[i][len(item):]
