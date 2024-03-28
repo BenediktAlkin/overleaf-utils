@@ -151,7 +151,7 @@ def main(src, dst):
             text = line[text_start:text_end]
             line = line[:textbf_start] + f"**{text}**" + line[text_end + 1:]
 
-        # replace \hyperlink{link}{text} with [text](link)
+        # replace \hyperlink{link}{text} with **[text](link)**
         hyperlink = r"\hyperlink{"
         while hyperlink in line:
             hyperlink_start = line.index(hyperlink)
@@ -162,7 +162,7 @@ def main(src, dst):
             assert line[text_start - 1] == "{"
             text_end = text_start + line[text_start:].index("}")
             text = line[text_start:text_end]
-            line = line[:hyperlink_start] + f"[{text}]({link})" + line[text_end + 1:]
+            line = line[:hyperlink_start] + f"**[{text}]({link})**" + line[text_end + 1:]
 
         # replace escaped characters
         # \& -> &
