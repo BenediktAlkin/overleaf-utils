@@ -1,6 +1,7 @@
 scratchpad*.py
 src.tex
 dst.md
+dst.tex
 .idea
 *.json
 *.png
