@@ -12,3 +12,9 @@
 - `$\sim$` is converted to ~
 
 `python overleaf_to_markdown.py --src file.text --dst output.md`
+
+
+# Clean comments from a single latex file
+
+- removes everything starting from `%` in a line
+- skips if `\%` is used 
