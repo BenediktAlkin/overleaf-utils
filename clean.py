@@ -29,6 +29,9 @@ def main(src, dst):
         if idx == 0:
             del lines[i]
             continue
+        if idx == len(lines[i]) - 1:
+            i += 1
+            continue
         if lines[i][idx - 1] != "\\":
             lines[i] = lines[i][:idx]
         i += 1

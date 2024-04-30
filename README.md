@@ -18,3 +18,4 @@
 
 - removes everything starting from `%` in a line
 - skips if `\%` is used 
+- `%` at end of line are ignored (e.g. in `\end{subfigure}%`)
