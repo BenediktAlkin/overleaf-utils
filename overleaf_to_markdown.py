@@ -4,8 +4,8 @@ from pathlib import Path
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument("--src", type=str, required=True, help="path to a latex file")
-    parser.add_argument("--dst", type=str, required=True, help="path to output markdown file")
+    parser.add_argument("--src", type=str, default="src.tex", help="path to a latex file")
+    parser.add_argument("--dst", type=str, default="dst.md", help="path to output markdown file")
     return vars(parser.parse_args())
 
 
@@ -31,6 +31,7 @@ def main(src, dst):
                 and not line.startswith(r"\begin{document}")
                 and not line.startswith(r"\end{document}")
                 and not line.startswith(r"\hline")
+                and not line.startswith(r"\centering")
                 and not line.startswith(r"\newpage")
                 and not line.startswith(r"\definecolor")
         )
@@ -150,6 +151,15 @@ def main(src, dst):
             text_end = text_start + line[text_start:].index("}")
             text = line[text_start:text_end]
             line = line[:textbf_start] + f"**{text}**" + line[text_end + 1:]
+
+        # replace \textit{text} with *text*
+        textit = r"\textit{"
+        while textit in line:
+            textit_start = line.index(textit)
+            text_start = textit_start + len(textit)
+            text_end = text_start + line[text_start:].index("}")
+            text = line[text_start:text_end]
+            line = line[:textit_start] + f"*{text}*" + line[text_end + 1:]
 
         # replace \hyperlink{link}{text} with **[text](link)**
         hyperlink = r"\hyperlink{"
