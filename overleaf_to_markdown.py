@@ -65,8 +65,12 @@ def main(src, dst):
             lines.pop(i)
             line = lines[i]
             while not line.startswith(r"\end{itemize}"):
+                if line.startswith("%"):
+                    lines.pop(i)
+                    line = lines[i]
+                    continue
                 item = r"\item "
-                assert lines[i].startswith(item)
+                assert lines[i].startswith(item), lines[i]
                 lines[i] = "- " + lines[i][len(item):]
                 i += 1
                 line = lines[i]
