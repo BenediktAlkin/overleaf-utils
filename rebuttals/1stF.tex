@@ -52,13 +52,13 @@ Additionally, UPT consists of mostly transformer blocks, which have demonstrated
 **Stability of latent rollout**
 
 
-We found UPT to be fairly stable without any special techniques to stabilize the rollout (e.g. [1]). However, such methods could further improve UPTs performance but these methods are not specific to UPT and typically require additional computations during training. Therefore, we leave exploration of this combination to future work.
+We found UPT to be fairly stable without any special techniques to stabilize the rollout (e.g. [3]). However, such methods could further improve UPTs performance but these methods are not specific to UPT and typically require additional computations during training. Therefore, we leave exploration of this combination to future work.
 
-Additionally, the latent rollout opens new avenues to potentially apply existing stabilization tricks with less compute. For example, one could do the forward propagation for the stabilization technique from [2] in the latent space, which would greatly reduce training costs thereof. However, as these tricks can be tricky to train (e.g. due to requiring a precise trade-off between training the next-step prediction vs n-step prediction), we leave this direction to future work.
+Additionally, the latent rollout opens new avenues to potentially apply existing stabilization tricks with less compute. For example, one could do the forward propagation for the stabilization technique from [4] in the latent space, which would greatly reduce training costs thereof. However, as these tricks can be tricky to train (e.g. due to requiring a precise trade-off between training the next-step prediction vs n-step prediction), we leave this direction to future work.
 
 
 
-[1] Lippe et al., "Pde-refiner: Achieving accurate long rollouts with neural pde solvers", NeurIPS 2023, https://arxiv.org/abs/2308.05732
+[3] Lippe et al., "Pde-refiner: Achieving accurate long rollouts with neural pde solvers", NeurIPS 2023, https://arxiv.org/abs/2308.05732
 
-[2] Brandstetter et al., "Message passing neural pde solvers", ICLR 2022, https://arxiv.org/abs/2209.15616
+[4] Brandstetter et al., "Message passing neural pde solvers", ICLR 2022, https://arxiv.org/abs/2209.15616
 
