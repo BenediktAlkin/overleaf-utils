@@ -1,0 +1,83 @@
+Thank you for your review and helpful comments which were very useful to improve the paper. We address your points individually.
+
+
+**Comparison to other transformer methods**
+
+
+
+
+
+
+
+The fundamental building principles of UPT are (i) an encoding that is designed to handle irregular grids of various sizes, (ii) a compressed and unified latent space representation that allows for efficient forward propagation in the latent space, and (iii) a neural field-type decoder. We consider all of these points as fundamental for scaling neural operators.
+
+GNOT processes each mesh point as a token and therefore quadratically scales with the number of mesh points.
+Furthermore the output can only be evaluated at the positions of the input.
+
+Transolver's concept of "Physics-aware Tokens" is somewhat similar to UPTs supernodes.
+However, only the substitutes attention part operates on a reduced space, whereas the FFN part of the transformer operates on the uncompressed space. Therefore, it is a type of linear complexity transformer, which quickly becomes infeasible for larger input sizes (see Figure 2).
+Similarly, OFormer also operates on the uncompressed input.
+
+In contrast, UPT heavily compresses the input, leading to sub-linear complexity w.r.t. input size in all transformer layers.
+
+Additionally, we added comparisons to transformer baselines on regular grid datasets (see general response) where UPT outperforms e.g. OFormer by quite a big margin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Benefits of the latent rollout**
+
+While the latent rollout does not provide a significant performance improvement, it is almost an order of magnitude faster.
+The UPT framework allows to trade-off training compute vs inference compute. If inference time is crucial for a given application, one can train UPT with the inverse encoding and decoding objectives, requiring more training compute but greatly speeding up inference. If inference time is not important, one can simply train UPT without the reconstruction objectives to reduce training costs.
+
+Additionally, the latent rollout enables applicability to Lagrangian simulations. As UPT models the underlying field instead of tracking individual particle positions it does not have access to particle locations at inference time. Therefore, autoregressive rollouts are impossible since the encoder requires particle positions as input. Using the latent rollout, it is sufficient to know the initial particle positions as dynamics can be propagated without any spatial positions. After propagating the latent space forward in time, one can simply query the latent space at arbitrary positions to evaluate the underlying field at given positions. We showcase this in Figure 7 where the latent space is queried with regular grid coordinates (white arrows).
+
+
+We discuss a potential improvement for the latent rollout to make it more efficient in Appendix A. While we show in the paper that a latent rollout can be enabled via a simple end-to-end training, we think that it can be improved, e.g. via a two stage procedure of first training encoder/decoder in an autoencoder setting, followed by freezing encoder/decoder and training the approximator on the fixed pre-trained latent space akin to [1]. Such an approach would not require inverse encoding/decoding objectives as the separation of components is enforced through the multi-stage training.
+
+[1] Rombach et al., "High-resolution image synthesis with latent diffusion models", CVPR 2022, https://arxiv.org/abs/2112.10752
+
+**DiT modulation**
+
+Conditioning onto external features is crucial encode this external information into the model. We condition onto the current timestep and also onto the inflow velocity in the transient flow experiments.
+Note that this is not specific to UPT and we also apply conditioning to compared models.
+
+
+
+
+
+
+**Supernodes and radius graph creation**
+
+
+We realize that our description in the paper is a bit misleading. Supernodes are, in the case of Eulerian data, sampled according to the underlying mesh and, in the case of Lagrangian data, sampled according to the particle density. A random sampling procedure which follows the mesh or particle density, respectively, allows us to put domain knowledge into the architecture. (We change "randomly sampled" to "sampled according to the underlying mesh / underlying particle density".)
+Consequently, complex regions are accurately captured, as these regions will be assigned more supernodes than regions with a low-resolution mesh or few particles.
+
+
+
+
+The sampling of supernodes is done for each optimization step thus having a regularization effect.
+
+The radius graph encodes a fixed region around each supernode. While one could use the original edge connections for Eulerian data, Lagrangian data does not have edges. Additionally, we employ randomly dropping input nodes as a form of data augmentation which makes using the original edge connections more complicated from an implementation standpoint. In contrast, a radius graph is agnostic to randomly dropping input nodes.
+
+We choose the radius depending on the dataset. For each dataset, we first analyze the average degree of the radius graph with different radius values. We then choose the radius such that the degree is around 16, i.e. on average each supernode represents 16 inputs. We found our model to be fairly robust to the radius choice. Also, the circles of different supernodes can overlap. Therefore, the encoding of dense regions can be distributed among multiple supernodes.
+
+We impose the edge limit of the radius graph by randomly dropping connections to preserve the average distance from supernode to input nodes.
+
+
+
+
+
+Additionally, the radius graph facilitates Lagrangian settings where there is no predefined connectivity between particles.
+
+
+We extended discussion in the corresponding sections and added a guide on how to choose these hyperparameters to the paper.

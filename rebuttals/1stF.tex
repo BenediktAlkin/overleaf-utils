@@ -1,0 +1,64 @@
+We appreciate your review and respond to the raised concerns below.
+
+**Experiments with other PDEs**
+
+UPTs are neural operators known to be applicable across various PDE types. Due to the nonlinear nature of the NS equations, they are notoriously more challenging to solve than parabolic or hyperbolic PDEs, like the heat or wave equations. Therefore, we hypothesize that UPTs should also generalize well to different PDEs.
+
+
+Additionally, as requested by reviewer JKEE, we added comparisons of UPT with other methods on small-scale regular grid datasets. In total, UPT outperforms competitors on 5 diverse datasets that span over different dataset sizes (900 to 1M frames), resolutions (2K to 60K inputs), spatial dimensions (2D, 3D), simulation types (steady state, transient), different boundary conditions and specifications (Eulerian, Lagrangian).
+
+
+
+**Scalability with model size**
+
+
+We see now that Figure 5 could suggest that UPT does not scale well with parameter size. However, the scaling of GINO only looks good because GINO underperforms in contrast to UPT (GINO-68M is worse than UPT-8M). As you correctly identified, for well trained (UPT) models it gets increasingly difficult to improve the loss further. Ideally, one would show this by training larger GINO models, however this is *prohibitively* expensive (68M parameter models already take 450 A100 hours per model). We therefore go in the other directions and train even smaller UPT models that achieve a similar loss to the GINO models and compare scaling there. In Figure 2 of the supplemental pdf, we compare UPT 1M/2M/8M against GINO 8M/17M/68M. UPT shows similar scaling on that loss scale.
+
+We see how this could be easily misinterpreted from Figure 5 and adjust the paper accordingly to remove this misunderstanding.
+
+We strongly hypothesis that the effect of larger UPT models would become apparent in even more challenging settings or even
+larger datasets. However, challenging large-scale datasets are hard to come by, which is why we created one ourselves. Creating even larger and more complex ones is beyond the scope of our work as it exceeds our current resource budget, but it is definitely an interesting direction for future research/applications.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Scalability with dataset size**
+
+We added experiments to show the scalability and data efficiency of UPTs by training UPT-8M on a subset of the data used for the transient flow experiments. The results in Figure 3 of the supplementary rebuttal pdf show that UPT scales well with data and is data efficient, achieving comparable results to GINO-8M with 4x less data.
+
+We also show that UPTs can handle various dataset sizes. ShapeNet-Car is a small-scale dataset consisting of 889 car shapes with 3.6K mesh points each. TGV3D is a bit bigger with 8K particles per simulation and 200 simulations of length 61 (12K frames). The dataset for our transient flow experiments contains around 50K mesh cells per simulation with 10K simulations of length 100 (~ 100K frames).
+UPT shows strong performances across all considered dataset sizes.
+
+
+Additionally, UPT consists of mostly transformer blocks, which have demonstrated outstanding scalability in other domains such as language modeling [1] and computer vision [2].
+
+
+[1] Kaplan et al., "Scaling laws for neural language models", arXiv 2020, https://arxiv.org/abs/2001.08361
+
+
+[2] Zhai et al., "Scaling vision transformers", CVPR 2022, https://arxiv.org/abs/2106.04560
+
+
+**Stability of latent rollout**
+
+
+We found UPT to be fairly stable without any special techniques to stabilize the rollout (e.g. [1]). However, such methods could further improve UPTs performance but these methods are not specific to UPT and typically require additional computations during training. Therefore, we leave exploration of this combination to future work.
+
+Additionally, the latent rollout opens new avenues to potentially apply existing stabilization tricks with less compute. For example, one could do the forward propagation for the stabilization technique from [2] in the latent space, which would greatly reduce training costs thereof. However, as these tricks can be tricky to train (e.g. due to requiring a precise trade-off between training the next-step prediction vs n-step prediction), we leave this direction to future work.
+
+
+
+[1] Lippe et al., "Pde-refiner: Achieving accurate long rollouts with neural pde solvers", NeurIPS 2023, https://arxiv.org/abs/2308.05732
+
+[2] Brandstetter et al., "Message passing neural pde solvers", ICLR 2022, https://arxiv.org/abs/2209.15616
+

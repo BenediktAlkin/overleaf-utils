@@ -1,0 +1,39 @@
+Thank you for your comments which helped to improve the paper. We addressed all your comments and followed all your suggestions.
+
+**Memory and time complexity of different architectures**
+
+
+We provide theoretical complexities in Appendix C.6 in Table 3. Note that when scaling only the input size towards infinity to calculate an asymptotic runtime/memory complexity, the runtime complexity is mostly the same as the memory complexity as storing intermediate activation dominates the other factors. For example, transformers scale quadratic with the number of inputs M. For large M, a transformer needs to calculate the MxM attention matrix and also store it in memory. Therefore, it has $O(M^2)$ runtime and memory complexity.
+For simplicity, we only consider the theoretical case and do not take optimizations such as hardware-aware implementations (e.g. [1]) into account that can trade-off additional runtime for a reduced memory footprint.
+
+As the theoretical complexities introduce many variables due to different architectures processing the input in vastly different ways, we believe that Figure 2 presents the practical complexities in a cleaner way and provide the theoretical complexities later in the appendix.
+
+[1] Dao et al., "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness", NeurIPS 2022, https://arxiv.org/abs/2205.14135
+
+
+
+**Positional encoding type**
+
+
+
+We employ the same positional embedding approach used in the original transformer paper [1], applying it separately to each dimension, as is also common in vision transformers. Namely, we employ a combination of sine and cosine functions with different frequencies to encode each position. The revised version of the paper offers a clearer explanation of this positional embedding.
+
+We also experimented with different types of positional embeddings such as the Fourier feature mapping from [1], which uses randomly sampled frequencies from a Gaussian distribution. In an experiment on TGV2D of our Lagrangian experiments it shows a slight improvement (see Figure 2 of the supplemental rebuttal pdf). The results show a slight improvement for longer rollouts, which we hypothesize is because this method doesn't overly emphasize features aligned with the axes. However, as improvements of other positional embeddings were minor, we stuck to the transformer positional embedding for simplicity.
+
+
+[1] Vaswani et al., "Attention is all you need", NeurIPS 2017, https://arxiv.org/abs/1706.03762
+
+[2] Tancik et al., "Fourier features let networks learn high frequency functions in low dimensional domains", NeurIPS 2020, https://arxiv.org/abs/2006.10739
+
+
+
+**Additional accuracy metrics and memory benefits of Table 1**
+
+We included memory benefits in Table 3 of Appendix C.6. However, we find it difficult to assign a representative accuracy metric to each architecture
+as most methods are specialized for a certain type of task. For example, the accuracy of a CNN on a task with irregular data will naturally be worse than the accuracy of a GNN on that problem. UPT shows strong performances across various input domains and input scales, but as other methods are not as flexible we find it difficult to quantify their performance with a single metric.
+
+
+**Application in other domains**
+
+Our method could also be applied to other fields, such as video modeling. In that context, it would be possible to train on a dataset with varying resolutions. Since the decoder's output is a point-wise neural field, it could generate videos at arbitrarily high resolutions.
+However, in the context of language modeling, this approach is challenging to apply because language data is finite-dimensional.

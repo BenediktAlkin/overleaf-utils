@@ -1,0 +1,65 @@
+Thank you for your profound review and suggestions that helped us to improve our paper a lot. We addressed all your comments and followed all your suggestions. Please let us expand a bit on your comments.
+
+
+**Clarity and detail in methodology**
+
+
+In order to make the paper more accessible we -- as suggested -- add pseudocode of a UPT forward pass with adaptive sampling. This together with sketch Figure 3a, sketch Figure 3b, and the encoder/approximator/decoder description of Section 3 should make the paper understandable wrt. all necessary details.
+
+**Scalability to extremely large datasets / high-resolution grids**
+
+We agree that scalability to extremely large datasets is a desired property. In the paper, we have done our best to test this. Our models are trained using distributed training up to 32 A100 GPUs. We have self-simulated a dedicated dataset which is larger (> 50000 mesh points), and more complex (different flow regimes, different number of differently placed obstacles) as standard grid based datasets. As requested by several reviewers we have added experiments on the Shallow Water dataset and the Navier-Stokes dataset to the paper, which demonstrate the diverse applicability of UPT. However, even larger simulations than our transient flow simulations are beyond the scope of this paper and the available compute budget. Nevertheless, we have tested GPU usage of several model classes (Figure 2), which demonstrates that our framework is able to process meshes / particle clouds with up to 4 million nodes on a single GPU.
+
+**Insufficient analysis of generalization capabilities**
+
+We agree that generalization capabilities are one of the most important aspects to test for neural operators. Therefore, in the transient flow experiment -- our largest experiment -- we test generalization across number of input / output points (discretization convergence), discretization across different flow regimes (input velocity), and generalization across different scenarios (differently placed obstacles).
+
+
+**Potential overfitting concerns**
+
+We observe that the variable selection of the supernodes and the variable selection of input/output nodes allows for a strong regularization and data augmentation. The general training pipeline of UPT is therefore very robust against overfitting. This is further strengthened by the additional Navier-Stokes and Shallow water experiments.
+
+**Lack of detailed comparison with established numerical methods**
+
+We are not claiming to be better than numerical methods. We compare with neural methods and especially focus on scaling. We follow the general procedures of the community, and report MSE, correlation time measures, and runtime comparisons. The latter two give an idea of the potential of UPT when compared with numerical methods. Similar to e.g. weather modeling (see Aurora [2], Pangu [3], ...) we follow the belief that benefits of neural operators will become more pronounced at scale.
+
+**Handling of boundary conditions**
+
+The ShapeNet car experiment allows for testing neural operators on complicated geometries. UPT performs favorably, even when using a strongly reduced latent space representation. Additionally, in the transient flow example we have varying numbers of differently placed obstacles which can also be seen as complicated in-domain boundaries. In fact, UPT is specifically designed for large data on non-regular domains including different boundary conditions.
+
+**Model conditioning**
+
+We have added a more detailed paragraph on the model conditioning choices in this paper. In our paper we follow closely the detailed studies described in [1].
+
+**Real world applications**
+
+Real world applications are beyond the scope of this work, but a very strong motivation for developing our framework. We note that current weather modeling such as Aurora [2] or Pangu [3] follow a similar design principle, but for regular gridded data, and without discretization convergence properties.
+
+**Question on complex boundary conditions**
+
+Transformers offer a flexible way to encode various boundary conditions.
+Skalar boundary conditions, such as inflow velocity or the current timestep, can be encoded via feature modulations. We use DiT modulation as it has shown strong performances in transformers.
+
+Additionally, transformers offer a flexible mechanism to encode additional information by encoding the information into tokens and concatenating them to the supernodes or latent tokens. We make use of this flexible encoding in the ShapeNet-Car experiments where we additionally encode the signed distance function evaluated on a 3D grid via a CNN and feed the resulting tokens to the approximator.
+
+**Question on numerical stabilitiy and accuracy**
+
+Traditional methods require extremely small timesteps in order to preserve numerical stability when resolving the physics.
+As neural operators only approximate the solution of the traditional solver, they can operate on much larger timesteps as their powerful modeling capabilities enables them to learn dynamics also from a coarse time resolution.
+
+
+Furthermore, UPT rollouts are fairly stable without any specific measures to ensure rollout stability. Sophisticated techniques to improve rollout stability (e.g., [4]) could be easily applied to UPTs to further enhance rollout stability. However, as these techniques typically impose a runtime overhead, we leave exploration thereof to future work.
+
+
+[1] Gupta et al., "Towards Multi-spatiotemporal-scale Generalized PDE Modeling", arXiv 2022, https://arxiv.org/abs/2209.15616
+
+[2] Bodnar et al., "Aurora: A foundation model of the atmosphere", arXiv 2024, https://arxiv.org/abs/2405.13063
+
+[3] Bi et al., "Accurate medium-range global weather forecasting with 3D neural networks", Nature 2023, https://www.nature.com/articles/s41586-023-06185-3
+
+
+[4] Brandstetter et al., "Message passing neural pde solvers", ICLR 2022, https://arxiv.org/abs/2209.15616
+
+
+
+
