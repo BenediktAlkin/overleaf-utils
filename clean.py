@@ -16,11 +16,18 @@ def main(src, dst):
     with open(src, encoding="utf8") as f:
         lines = f.readlines()
 
-    # remove whitespaces
-    lines = [line.strip() for line in lines]
-
     i = 0
     while i < len(lines):
+        if "lstlisting" in lines[i]:
+            i += 1
+            while "lstlisting" not in lines[i]:
+                # remove \n
+                lines[i] = lines[i][:-1]
+                i += 1
+
+        # remove whitespaces
+        lines[i] = lines[i].strip()
+
         try:
             idx = lines[i].index("%")
         except ValueError:
